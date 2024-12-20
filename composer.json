@@ -1,0 +1,44 @@
+{
+    "name": "skie/rop",
+    "type": "library",
+    "require": {
+	},
+    "require-dev": {
+        "phpunit/phpunit": "^11.1.3",
+		"phpstan/phpstan": "^2.0",
+        "cakephp/cakephp-codesniffer": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ROP\\": "src/"
+        }
+    },
+	 "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests/"
+		}
+	},
+    "authors": [
+        {
+            "name": "Evgeny Tomenko",
+            "email": "skie@mail.ru"
+        }
+    ],
+    "require": {},
+	"scripts": {
+        "check": [
+            "@test",
+            "@cs-check",
+            "@stan"
+        ],
+        "cs-check": "phpcs --colors -p -s --standard=CakePHP src/ tests/",
+        "cs-fix": "phpcbf --colors -p -s --standard=CakePHP src/ tests/",
+        "stan": "phpstan analyze src/ tests/",
+        "test": "phpunit --colors=always"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

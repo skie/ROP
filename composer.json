@@ -1,6 +1,10 @@
 {
     "name": "skie/rop",
     "type": "library",
+    "description": "Railway Oriented Programming for PHP",
+    "keywords": ["railway", "oriented", "programming", "php"],
+    "homepage": "https://github.com/skie/ROP",
+    "license": "MIT",
     "require": {},
     "require-dev": {
         "phpunit/phpunit": "^11.1.3",

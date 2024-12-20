@@ -1,8 +1,7 @@
 {
     "name": "skie/rop",
     "type": "library",
-    "require": {
-	},
+    "require": {},
     "require-dev": {
         "phpunit/phpunit": "^11.1.3",
 		"phpstan/phpstan": "^2.0",
@@ -24,7 +23,6 @@
             "email": "skie@mail.ru"
         }
     ],
-    "require": {},
 	"scripts": {
         "check": [
             "@test",

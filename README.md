@@ -99,7 +99,7 @@ $railway = Railway::of(5)
 ## Installation
 
 ```bash
-composer require your-vendor/rop
+composer require skie/rop
 ```
 
 ## Quick Start

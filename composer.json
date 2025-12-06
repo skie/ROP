@@ -5,8 +5,8 @@
     "keywords": ["railway", "oriented", "programming", "php"],
     "homepage": "https://github.com/skie/ROP",
     "license": "MIT",
-    "require": {},
     "require-dev": {
+        "php": "^8.5",
         "phpunit/phpunit": "^11.1.3",
 		"phpstan/phpstan": "^2.0",
         "cakephp/cakephp-codesniffer": "^5.0"
@@ -14,7 +14,10 @@
     "autoload": {
         "psr-4": {
             "ROP\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
 	 "autoload-dev": {
         "psr-4": {

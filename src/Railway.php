@@ -23,7 +23,7 @@ class Railway
      * @param \ROP\Result<TValue, TError> $result The underlying Result object containing success/failure state
      */
     protected function __construct(
-        private readonly Result $result
+        private readonly Result $result,
     ) {
     }
 
@@ -163,7 +163,7 @@ class Railway
      */
     public function map(callable $fn): self
     {
-        return $this->bind(fn ($value) => self::of($fn($value)));
+        return $this->bind(fn($value) => self::of($fn($value)));
     }
 
     /**
@@ -271,7 +271,7 @@ class Railway
         if ($r1->isSuccess() && $r2->isSuccess()) {
             return self::of($successFunc(
                 $r1->getValue(),
-                $r2->getValue()
+                $r2->getValue(),
             ));
         }
 

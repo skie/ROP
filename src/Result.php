@@ -20,7 +20,7 @@ class Result
      */
     private function __construct(
         private readonly mixed $value,
-        private readonly mixed $error = null
+        private readonly mixed $error = null,
     ) {
     }
 

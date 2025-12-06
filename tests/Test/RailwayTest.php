@@ -28,7 +28,7 @@ class RailwayTest extends TestCase
     public function testBind(): void
     {
         $railway = Railway::of(2)
-            ->bind(fn ($x) => Railway::of($x * 2));
+            ->bind(fn($x) => Railway::of($x * 2));
 
         $this->assertTrue($railway->isSuccess());
         $this->assertEquals(4, $railway->getValue());
@@ -37,7 +37,7 @@ class RailwayTest extends TestCase
     public function testBindWithFailure(): void
     {
         $railway = Railway::of(2)
-            ->bind(fn ($x) => Railway::fail('error'));
+            ->bind(fn($x) => Railway::fail('error'));
 
         $this->assertFalse($railway->isSuccess());
         $this->assertEquals('error', $railway->getError());
@@ -46,7 +46,7 @@ class RailwayTest extends TestCase
     public function testMap(): void
     {
         $railway = Railway::of(2)
-            ->map(fn ($x) => $x * 2);
+            ->map(fn($x) => $x * 2);
 
         $this->assertTrue($railway->isSuccess());
         $this->assertEquals(4, $railway->getValue());
@@ -55,7 +55,7 @@ class RailwayTest extends TestCase
     public function testLift(): void
     {
         $railway = Railway::of(2)
-            ->bind(Railway::lift(fn ($x) => $x * 2));
+            ->bind(Railway::lift(fn($x) => $x * 2));
 
         $this->assertTrue($railway->isSuccess());
         $this->assertEquals(4, $railway->getValue());
@@ -88,14 +88,14 @@ class RailwayTest extends TestCase
     {
         $successRailway = Railway::of(2)
             ->doubleMap(
-                fn ($x) => $x * 2,
-                fn ($e) => "mapped: $e"
+                fn($x) => $x * 2,
+                fn($e) => "mapped: $e",
             );
 
         $failureRailway = Railway::fail('error')
             ->doubleMap(
-                fn ($x) => $x * 2,
-                fn ($e) => "mapped: $e"
+                fn($x) => $x * 2,
+                fn($e) => "mapped: $e",
             );
 
         $this->assertEquals(4, $successRailway->getValue());
@@ -105,13 +105,13 @@ class RailwayTest extends TestCase
     public function testTryCatch(): void
     {
         $success = Railway::of(2)->tryCatch(
-            fn ($x) => $x * 2
+            fn($x) => $x * 2,
         );
 
         $failure = Railway::of(2)->tryCatch(
             function () {
                 throw new Exception('error');
-            }
+            },
         );
 
         $this->assertEquals(4, $success->getValue());
@@ -121,7 +121,7 @@ class RailwayTest extends TestCase
     public function testTryWith(): void
     {
         $railway = Railway::of(2)
-            ->bind(Railway::tryWith(fn ($x) => $x * 2));
+            ->bind(Railway::tryWith(fn($x) => $x * 2));
 
         $this->assertTrue($railway->isSuccess());
         $this->assertEquals(4, $railway->getValue());
@@ -144,10 +144,10 @@ class RailwayTest extends TestCase
         $r2 = Railway::of(3);
 
         $combined = Railway::plus(
-            fn ($a, $b) => $a + $b,
-            fn ($errors) => implode(', ', $errors),
+            fn($a, $b) => $a + $b,
+            fn($errors) => implode(', ', $errors),
             $r1,
-            $r2
+            $r2,
         );
 
         $this->assertEquals(5, $combined->getValue());
@@ -167,14 +167,14 @@ class RailwayTest extends TestCase
     {
         $success = Railway::of(2)
             ->match(
-                fn ($x) => $x * 2,
-                fn ($e) => 0
+                fn($x) => $x * 2,
+                fn($e) => 0,
             );
 
         $failure = Railway::fail('error')
             ->match(
-                fn ($x) => $x * 2,
-                fn ($e) => 0
+                fn($x) => $x * 2,
+                fn($e) => 0,
             );
 
         $this->assertEquals(4, $success);

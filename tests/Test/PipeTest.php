@@ -13,8 +13,8 @@ class PipeTest extends TestCase
     public function testFlow(): void
     {
         $pipeline = Pipe::flow(
-            fn ($x) => $x + 1,
-            fn ($x) => $x * 2
+            fn($x) => $x + 1,
+            fn($x) => $x * 2,
         );
 
         $this->assertEquals(6, $pipeline(2));
@@ -23,8 +23,8 @@ class PipeTest extends TestCase
     public function testCompose(): void
     {
         $pipeline = Pipe::compose(
-            fn ($x) => $x * 2,
-            fn ($x) => $x + 1
+            fn($x) => $x * 2,
+            fn($x) => $x + 1,
         );
 
         $this->assertEquals(6, $pipeline(2));
@@ -33,8 +33,8 @@ class PipeTest extends TestCase
     public function testChainablePipe(): void
     {
         $result = Pipe::from(2)
-            ->pipe(fn ($x) => $x + 1)
-            ->pipe(fn ($x) => $x * 2)
+            ->pipe(fn($x) => $x + 1)
+            ->pipe(fn($x) => $x * 2)
             ->value();
 
         $this->assertEquals(6, $result);
@@ -42,8 +42,8 @@ class PipeTest extends TestCase
 
     public function testNestedPipes(): void
     {
-        $addOne = fn ($x) => $x + 1;
-        $multiplyByTwo = fn ($x) => $x * 2;
+        $addOne = fn($x) => $x + 1;
+        $multiplyByTwo = fn($x) => $x * 2;
 
         $result = Pipe::from(2)
             ->pipe(Pipe::flow($addOne, $multiplyByTwo))
@@ -75,8 +75,8 @@ class PipeTest extends TestCase
 
     public function testLiftWithChaining(): void
     {
-        $double = Pipe::lift(fn ($x) => $x * 2);
-        $addOne = Pipe::lift(fn ($x) => $x + 1);
+        $double = Pipe::lift(fn($x) => $x * 2);
+        $addOne = Pipe::lift(fn($x) => $x + 1);
 
         $result = Railway::of(2)
             ->bind($double)

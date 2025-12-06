@@ -16,7 +16,7 @@ class Pipe
      * @param mixed $value The current value in the pipe
      */
     private function __construct(
-        private mixed $value
+        private mixed $value,
     ) {
     }
 
@@ -61,7 +61,7 @@ class Pipe
     public static function flow(callable ...$fns): callable
     {
         return function ($x) use ($fns) {
-            return array_reduce($fns, fn ($acc, $fn) => $fn($acc), $x);
+            return array_reduce($fns, fn($acc, $fn) => $fn($acc), $x);
         };
     }
 

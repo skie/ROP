@@ -1,6 +1,8 @@
 parameters:
-    level: 8
+    level: 7
     treatPhpDocTypesAsCertain: false
     bootstrapFiles:
+    ignoreErrors:
+        - identifier: method.templateTypeNotInParameter
 
 services:

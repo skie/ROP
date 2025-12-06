@@ -4,5 +4,6 @@ parameters:
     bootstrapFiles:
     ignoreErrors:
         - identifier: method.templateTypeNotInParameter
+        - identifier: argument.templateType
 
 services:

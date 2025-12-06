@@ -329,6 +329,55 @@ $result = 10
 
 **Railway Diagram**: Dead-end function converted to pass-through (stays on same track)
 
+#### tap() - Inspect Result for Monitoring
+
+Executes a function for side effects on the Result itself (both success and error tracks). Unlike `tee()` which only operates on success values, `tap()` receives the entire Result object, making it perfect for monitoring, debugging, and logging both success and failure paths.
+
+```php
+use function ROP\{ok, fail, map, tap};
+
+$log = [];
+
+// Monitor both success and error states
+$result = 10
+    |> ok(...)
+    |> tap(fn($r) => $log[] = $r->isSuccess() ? "Success path" : "Error path")
+    |> map(fn($x) => $x * 2)
+    |> tap(fn($r) => $log[] = sprintf("Current value: %s", $r->getValue()));
+
+// $log = ["Success path", "Current value: 20"]
+// $result = ok(20)
+
+// Error tracking example
+$errorLog = [];
+
+$result = 'invalid input'
+    |> fail(...)
+    |> tap(fn($r) => !$r->isSuccess() && $errorLog[] = $r->getError())
+    |> map(fn($x) => $x * 2)
+    |> tap(fn($r) => !$r->isSuccess() && $errorLog[] = 'Still in error state');
+
+// $errorLog = ["invalid input", "Still in error state"]
+// $result = fail("invalid input")
+```
+
+**Key Differences from tee()**:
+- `tee()`: Operates on unwrapped **success values only** - `fn($value) => ...`
+- `tap()`: Operates on the **Result object itself** - `fn($result) => ...`
+- `tee()`: Skips execution on error track
+- `tap()`: Executes on both success and error tracks
+
+**Common Use Cases**:
+- Monitoring success/error metrics
+- Debugging pipeline state transitions
+- Conditional logging based on Result state
+- Auditing both successful and failed operations
+- Error tracking and alerting systems
+
+**Type Signature**: `(Result<T, E> → void) → Result<T, E> → Result<T, E>`
+
+**Railway Diagram**: Inspection adapter that observes both tracks without switching
+
 #### doubleMap() - Transform Both Tracks
 
 Transforms both success and error values. Essential for formatting final results or converting error types.
@@ -927,21 +976,23 @@ $order = Railway::of($orderData)
 3. Use `bind()` for operations that return Results
 4. Use `lift()` to convert regular functions into Result-returning functions
 5. Use `tryCatch()` to integrate exception-based code
-6. Use `tee()` for debugging and side effects
-7. Use `plus()` or `plusWith()` for parallel operations and combining Results
-8. Use `unite()` for sequential validation chains
-9. Use `doubleMap()` at the end to format both success and error results
-10. Use `compose()` to create reusable pipeline functions
-11. Keep each step focused on a single responsibility
-12. Use descriptive error types instead of generic strings
-13. Extract complex logic into named functions for clarity
+6. Use `tee()` for side effects on success values (logging, notifications)
+7. Use `tap()` for monitoring both success and error tracks (debugging, metrics, auditing)
+8. Use `plus()` or `plusWith()` for parallel operations and combining Results
+9. Use `unite()` for sequential validation chains
+10. Use `doubleMap()` at the end to format both success and error results
+11. Use `compose()` to create reusable pipeline functions
+12. Keep each step focused on a single responsibility
+13. Use descriptive error types instead of generic strings
+14. Extract complex logic into named functions for clarity
 
 ### General Guidelines
 
 - Keep transformations small and focused
 - Use type hints when combining multiple error types
 - Prefer explicit error types over generic messages
-- Use `tee()` liberally for debugging during development
+- Use `tee()` for logging success values during development
+- Use `tap()` for debugging pipeline state and tracking errors
 - Consider using custom error classes for complex domains
 
 ## Contributing

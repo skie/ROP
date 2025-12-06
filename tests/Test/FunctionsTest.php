@@ -15,6 +15,7 @@ use function ROP\map;
 use function ROP\ok;
 use function ROP\plus;
 use function ROP\plusWith;
+use function ROP\tap;
 use function ROP\tee;
 use function ROP\tryCatch;
 use function ROP\unite;
@@ -222,6 +223,103 @@ class FunctionsTest extends TestCase
 
         $this->assertEquals(['step 1: 2', 'step 2: 4'], $log);
         $this->assertEquals(4, $result->getValue());
+    }
+
+    public function testTapExecutesSideEffectOnSuccess(): void
+    {
+        $inspected = null;
+        $result = ok(42);
+        $tapped = tap(function ($r) use (&$inspected) {
+            $inspected = [
+                'isSuccess' => $r->isSuccess(),
+                'value' => $r->getValue(),
+            ];
+        })($result);
+
+        $this->assertEquals(['isSuccess' => true, 'value' => 42], $inspected);
+        $this->assertTrue($tapped->isSuccess());
+        $this->assertEquals(42, $tapped->getValue());
+        $this->assertSame($result, $tapped);
+    }
+
+    public function testTapExecutesSideEffectOnError(): void
+    {
+        $inspected = null;
+        $result = fail('error message');
+        $tapped = tap(function ($r) use (&$inspected) {
+            $inspected = [
+                'isSuccess' => $r->isSuccess(),
+                'error' => $r->getError(),
+            ];
+        })($result);
+
+        $this->assertEquals(['isSuccess' => false, 'error' => 'error message'], $inspected);
+        $this->assertFalse($tapped->isSuccess());
+        $this->assertEquals('error message', $tapped->getError());
+        $this->assertSame($result, $tapped);
+    }
+
+    public function testTapWithPipeOperator(): void
+    {
+        $log = [];
+
+        $result = 2
+            |> ok(...)
+            |> tap(function ($r) use (&$log) {
+                $log[] = sprintf('Result state: %s', $r->isSuccess() ? 'success' : 'error');
+            })
+            |> map(fn($x) => $x * 2)
+            |> tap(function ($r) use (&$log) {
+                $log[] = sprintf('Value after map: %s', $r->getValue());
+            });
+
+        $this->assertEquals(['Result state: success', 'Value after map: 4'], $log);
+        $this->assertEquals(4, $result->getValue());
+    }
+
+    public function testTapLogsErrorPath(): void
+    {
+        $log = [];
+
+        $result = 'invalid'
+            |> fail(...)
+            |> tap(function ($r) use (&$log) {
+                if (!$r->isSuccess()) {
+                    $log[] = sprintf('Error: %s', $r->getError());
+                }
+            })
+            |> map(fn($x) => $x * 2)
+            |> tap(function ($r) use (&$log) {
+                if (!$r->isSuccess()) {
+                    $log[] = 'Still in error state';
+                }
+            });
+
+        $this->assertEquals(['Error: invalid', 'Still in error state'], $log);
+        $this->assertFalse($result->isSuccess());
+    }
+
+    public function testTapForMonitoringBothTracks(): void
+    {
+        $successCount = 0;
+        $errorCount = 0;
+
+        $monitor = tap(function ($r) use (&$successCount, &$errorCount) {
+            if ($r->isSuccess()) {
+                $successCount++;
+            } else {
+                $errorCount++;
+            }
+        });
+
+        ok(1) |> $monitor;
+        ok(2) |> $monitor;
+        fail('error') |> $monitor;
+        ok(3) |> $monitor;
+        fail('another error') |> $monitor;
+
+        $this->assertEquals(3, $successCount);
+        $this->assertEquals(2, $errorCount);
     }
 
     public function testDoubleMapTransformsBothTracks(): void

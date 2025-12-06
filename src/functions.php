@@ -260,6 +260,28 @@ function plusWith(callable $successFunc, callable $failureFunc, Result $other): 
 }
 
 /**
+ * Tap adapter - execute side effects on Result itself
+ *
+ * Similar to tee() but operates on the Result itself rather than unwrapped value.
+ * Executes function for inspection/debugging of both success and error tracks.
+ * Returns original Result unchanged, allowing it to continue down the pipeline.
+ * Useful for logging, debugging, or monitoring both success and failure states.
+ *
+ * @template TValue
+ * @template TError
+ * @param callable(\ROP\Result<TValue, TError>): void $fn Side-effect function that receives Result
+ * @return callable(\ROP\Result<TValue, TError>): \ROP\Result<TValue, TError> Function that accepts Result and returns Result unchanged
+ */
+function tap(callable $fn): callable
+{
+    return function (Result $result) use ($fn): Result {
+        $fn($result);
+
+        return $result;
+    };
+}
+
+/**
  * Unites two Results sequentially
  *
  * If first Result succeeds, returns the second Result.

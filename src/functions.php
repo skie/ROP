@@ -28,6 +28,20 @@ function ok(mixed $value): Result
 }
 
 /**
+ * Create successful result (constructor)
+ *
+ * Converts a single-track value into a two-track Result on success path
+ *
+ * @template TSuccess
+ * @param TSuccess $value Success value
+ * @return \ROP\Result<TSuccess, never> Success result
+ */
+function of(mixed $value): Result
+{
+    return Result::success($value);
+}
+
+/**
  * Create error result (constructor)
  *
  * Converts a single-track value into a two-track Result on failure path
